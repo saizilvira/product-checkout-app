@@ -1,21 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+
 import {
     PRODUCT_REPOSITORY,
-    ProductRepository,
 } from '../../domain/repositories/product.repository';
+import type { ProductRepository } from '../../domain/repositories/product.repository';
+
 import {
     CUSTOMER_REPOSITORY,
-    CustomerRepository,
 } from '../../domain/repositories/customer.repository';
+import type { CustomerRepository } from '../../domain/repositories/customer.repository';
+
 import {
     DELIVERY_REPOSITORY,
-    DeliveryRepository,
 } from '../../domain/repositories/delivery.repository';
+import type { DeliveryRepository } from '../../domain/repositories/delivery.repository';
+
 import {
     TRANSACTION_REPOSITORY,
-    TransactionRepository,
 } from '../../domain/repositories/transaction.repository';
+import type { TransactionRepository } from '../../domain/repositories/transaction.repository';
+
 import { Customer } from '../../domain/entities/customer.entity';
 import { Delivery } from '../../domain/entities/delivery.entity';
 import { Transaction } from '../../domain/entities/transaction.entity';

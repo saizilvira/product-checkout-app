@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-    PRODUCT_REPOSITORY,
-    ProductRepository,
-} from '../../domain/repositories/product.repository';
+import { PRODUCT_REPOSITORY } from '../../domain/repositories/product.repository';
+import type { ProductRepository } from '../../domain/repositories/product.repository';
 import { Product } from '../../domain/entities/product.entity';
 import { Result } from '../../shared/result';
 

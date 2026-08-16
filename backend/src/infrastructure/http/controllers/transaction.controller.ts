@@ -12,10 +12,8 @@ import { CreateTransactionUseCase } from '../../../application/use-cases/create-
 import { ProcessPaymentUseCase } from '../../../application/use-cases/process-payment.use-case';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { ProcessPaymentDto } from '../dto/process-payment.dto';
-import {
-    TRANSACTION_REPOSITORY,
-    TransactionRepository,
-} from '../../../domain/repositories/transaction.repository';
+import { TRANSACTION_REPOSITORY } from '../../../domain/repositories/transaction.repository';
+import type { TransactionRepository } from '../../../domain/repositories/transaction.repository';
 import { Inject } from '@nestjs/common';
 
 @Controller('transactions')

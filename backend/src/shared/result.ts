@@ -5,12 +5,12 @@ export class Result<T, E = Error> {
         private readonly _isSuccess: boolean = false,
     ) { }
 
-    static ok<T>(value: T): Result<T> {
-        return new Result<T>(value, undefined, true);
+    static ok<T, E = Error>(value: T): Result<T, E> {
+        return new Result<T, E>(value, undefined, true);
     }
 
-    static fail<E>(error: E): Result<never, E> {
-        return new Result<never, E>(undefined, error, false);
+    static fail<T = never, E = Error>(error: E): Result<T, E> {
+        return new Result<T, E>(undefined, error, false);
     }
 
     isSuccess(): boolean {
@@ -35,17 +35,16 @@ export class Result<T, E = Error> {
         return this._error as E;
     }
 
-    // Métodos útiles para ROP
     map<U>(fn: (value: T) => U): Result<U, E> {
         if (this.isFailure()) {
-            return Result.fail(this.getError());
+            return Result.fail<U, E>(this.getError());
         }
-        return Result.ok(fn(this.getValue()));
+        return Result.ok<U, E>(fn(this.getValue()));
     }
 
     flatMap<U>(fn: (value: T) => Result<U, E>): Result<U, E> {
         if (this.isFailure()) {
-            return Result.fail(this.getError());
+            return Result.fail<U, E>(this.getError());
         }
         return fn(this.getValue());
     }
