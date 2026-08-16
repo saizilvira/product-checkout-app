@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { DatabaseModule } from './infrastructure/persistence/database.module';
+import { ApplicationModule } from './application/application.module';
+import { PaymentGatewayModule } from './infrastructure/payment-gateway/payment-gateway.module';
 
 @Module({
   imports: [
@@ -11,11 +13,13 @@ import { DatabaseModule } from './infrastructure/persistence/database.module';
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 minuto
-        limit: 100, // 100 requests por minuto
+        ttl: 60000,
+        limit: 100,
       },
     ]),
     DatabaseModule,
+    PaymentGatewayModule,
+    ApplicationModule,
   ],
   controllers: [],
   providers: [],
