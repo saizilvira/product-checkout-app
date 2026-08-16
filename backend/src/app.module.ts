@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { DatabaseModule } from './infrastructure/persistence/database.module';
 import { ApplicationModule } from './application/application.module';
 import { PaymentGatewayModule } from './infrastructure/payment-gateway/payment-gateway.module';
+import { HttpModule } from './infrastructure/http/http.module';
 
 @Module({
   imports: [
@@ -20,8 +21,7 @@ import { PaymentGatewayModule } from './infrastructure/payment-gateway/payment-g
     DatabaseModule,
     PaymentGatewayModule,
     ApplicationModule,
+    HttpModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule { }
