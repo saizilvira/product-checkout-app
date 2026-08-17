@@ -1,0 +1,154 @@
+{
+  "info": {
+    "name": "Product Checkout App API",
+    "description": "API endpoints for the product checkout onboarding flow.\n\nBase URL (production): https://product-checkout-app.onrender.com\n\nFlow:\n1. GET /products — get product and stock\n2. POST /transactions — create PENDING transaction\n3. POST /transactions/process-payment — process payment\n4. GET /transactions/:id — check status",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://product-checkout-app.onrender.com"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "transactionId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json();",
+                  "  if (data.id) {",
+                  "    pm.collectionVariables.set('productId', data.id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            },
+            "description": "Returns the product available in stock (name, description, priceInCents, stock, imageUrl)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "{{productId}}"]
+            },
+            "description": "Returns a product by UUID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Create transaction (PENDING)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const data = pm.response.json();",
+                  "  if (data.id) {",
+                  "    pm.collectionVariables.set('transactionId', data.id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"customer\": {\n    \"fullName\": \"Juan Perez\",\n    \"email\": \"juan.perez@example.com\",\n    \"phone\": \"3001234567\",\n    \"documentType\": \"CC\",\n    \"documentNumber\": \"1234567890\"\n  },\n  \"delivery\": {\n    \"address\": \"Calle 123 #45-67\",\n    \"city\": \"Bogota\",\n    \"region\": \"Cundinamarca\",\n    \"postalCode\": \"110111\",\n    \"phone\": \"3001234567\"\n  },\n  \"cardBrand\": \"VISA\",\n  \"cardLastFour\": \"4242\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"]
+            },
+            "description": "Creates a transaction in PENDING status. Saves productId from Get product first. Returns id, reference, fees and total."
+          },
+          "response": []
+        },
+        {
+          "name": "Process payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"{{transactionId}}\",\n  \"paymentSourceId\": \"tok_test_4242\",\n  \"customerEmail\": \"juan.perez@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transactions/process-payment",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "process-payment"]
+            },
+            "description": "Processes payment for a PENDING transaction via the payment gateway. On APPROVED, product stock is decreased."
+          },
+          "response": []
+        },
+        {
+          "name": "Get transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "{{transactionId}}"]
+            },
+            "description": "Returns transaction status and payment details."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+```
