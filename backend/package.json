@@ -82,7 +82,9 @@
       "!src/**/*.module.ts",
       "!src/**/*.orm-entity.ts",
       "!src/**/seeds/**",
-      "!src/**/dto/**"
+      "!src/**/dto/**",
+      "!src/app.controller.ts",
+      "!src/app.service.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

@@ -1,117 +1,142 @@
 # Product Checkout App
 
-Aplicación full-stack de onboarding de pago de un producto: visualización de stock, captura de datos de tarjeta y entrega, resumen de pago, procesamiento de la transacción y actualización de inventario.
+Full-stack application for product payment onboarding: show product and stock, collect card and delivery data, show payment summary, process the transaction, and update inventory.
+
+## Live demo
+
+| Layer | URL |
+|-------|-----|
+| **Frontend** | https://product-checkout-app-git-develop-vendly5.vercel.app/ |
+| **Backend API** | https://product-checkout-app.onrender.com/ |
 
 ## Stack
 
 ### Frontend
 - Vue 3 + TypeScript
-- Pinia (state management)
+- **Pinia** (state management)
 - Vue Router
-- Tailwind CSS (Flexbox/Grid)
+- Tailwind CSS (Flexbox / Grid, mobile-first)
 - Axios
 - Jest
 
-**¿Por qué Pinia en lugar de Vuex?**  
-Pinia es el sucesor oficial de Vuex para Vue 3, recomendado por el equipo de Vue. Mantiene los principios de la arquitectura Flux (flujo unidireccional, store centralizado, actions). Ofrece mejor soporte de TypeScript y API más simple. La persistencia del progreso del checkout se implementa con `pinia-plugin-persistedstate` sobre `localStorage`, cumpliendo el requisito de resiliencia ante refresh.
+**Why Pinia instead of Vuex?**  
+Pinia is the official successor to Vuex for Vue 3, recommended by the Vue team. It follows Flux architecture (unidirectional data flow, centralized store). Checkout progress is persisted with `pinia-plugin-persistedstate` in `localStorage` so the flow survives page refresh.
 
 ### Backend
 - NestJS + TypeScript
 - TypeORM + PostgreSQL
-- Arquitectura Hexagonal (Ports & Adapters)
-- Railway Oriented Programming (ROP) en Use Cases
-- Helmet + ValidationPipe + Throttler (OWASP)
+- **Hexagonal Architecture** (Ports & Adapters)
+- **Railway Oriented Programming (ROP)** via `Result<T, E>` in use cases
+- Helmet, ValidationPipe, Throttler (OWASP-oriented)
 - Jest
 
-## Arquitectura Backend (Hexagonal)
-domain/           → Entidades, Value Objects, Ports (interfaces)
-application/      → Use Cases (ROP con Result)
-infrastructure/   → Adapters (TypeORM, Payment Gateway, HTTP)
+## Architecture (Backend)
 
+```
+domain/            → Entities, Value Objects, Repository ports
+application/       → Use cases (business logic + ROP)
+infrastructure/    → Adapters (TypeORM, payment gateway, HTTP)
+```
 
-La lógica de negocio no vive en controllers. Los repositorios se definen como ports en el dominio y se implementan en infrastructure.
+Business logic is not handled in controllers. Controllers only validate input and call use cases.
 
-## Modelo de datos
+## Data model
 
 - **products** — id, name, description, price_in_cents, stock, image_url
 - **customers** — id, full_name, email, phone, document_type, document_number
 - **deliveries** — id, customer_id, address, city, region, postal_code, phone
-- **transactions** — id, reference, payment_gateway_transaction_id, product_id, customer_id, delivery_id, amounts (product, base_fee, delivery_fee, total), status, card metadata, currency
+- **transactions** — id, reference, payment_gateway_transaction_id, product_id, customer_id, delivery_id, amount/base_fee/delivery_fee/total (cents), status, card metadata, currency
 
-Todos los montos se manejan en **centavos**.
+All money values are stored in **cents**.
 
-## Flujo de negocio (5 pasos)
+## Business flow (5 steps)
 
-1. **Product page** — Muestra producto y stock
-2. **Credit Card / Delivery info** — Modal de tarjeta + formulario de entrega
-3. **Summary** — Backdrop con Product + Base fee + Delivery fee
-4. **Final status** — Resultado de la transacción
-5. **Product page** — Redirect con stock actualizado
+1. **Product page** — Product details and available stock  
+2. **Credit card / Delivery info** — Modal for card data + delivery form  
+3. **Summary** — Backdrop with product amount + base fee + delivery fee  
+4. **Final status** — Transaction result (APPROVED / DECLINED / ERROR)  
+5. **Product page** — Redirect with updated stock  
 
-## API Endpoints
+## API endpoints
 
-| Método | Ruta | Descripción |
+| Method | Path | Description |
 |--------|------|-------------|
-| GET | `/products` | Obtener producto |
-| GET | `/products/:id` | Obtener producto por ID |
-| POST | `/transactions` | Crear transacción PENDING |
-| POST | `/transactions/process-payment` | Procesar pago |
-| GET | `/transactions/:id` | Consultar transacción |
+| `GET` | `/products` | Get product and stock |
+| `GET` | `/products/:id` | Get product by id |
+| `POST` | `/transactions` | Create transaction in `PENDING` |
+| `POST` | `/transactions/process-payment` | Process payment with gateway |
+| `GET` | `/transactions/:id` | Get transaction status |
 
-### Postman / Swagger
+### Postman
 
-- Importar la colección Postman desde: `docs/postman_collection.json` *(crear este archivo)*
-- O documentar la URL de Swagger cuando se active: `http://localhost:3000/api`
+Import the collection from:
 
-## Cómo ejecutar en local
+[`docs/postman_collection.json`](./docs/postman_collection.json)
 
-### Requisitos
+Base URL variable: `https://product-checkout-app.onrender.com`
+
+Quick smoke test:
+
+```bash
+curl https://product-checkout-app.onrender.com/products
+```
+
+## Local setup
+
+### Requirements
 - Node.js 20+
 - PostgreSQL 16+
 - npm
 
 ### Backend
 
+```bash
 cd backend
 cp .env.example .env
-# Configurar DB_* y PAYMENT_* keys
+# set DB_* and PAYMENT_* variables
 npm install
 npm run seed
 npm run start:dev
+```
 
 ### Frontend
+
+```bash
 cd frontend
 cp .env.example .env
+# VITE_API_BASE_URL=http://localhost:3000
 npm install
 npm run dev
+```
 
-### Test
+### Tests
 
+```bash
 # Backend
 cd backend && npm run test:cov
 
 # Frontend
 cd frontend && npm run test:cov
+```
 
-### Seguridad (OWASP)
+## Test coverage
 
-Helmet (security headers)
-ValidationPipe global (whitelist + forbidNonWhitelisted)
-Rate limiting (Throttler)
-Secretos solo en variables de entorno
-Private key nunca expuesta al frontend
-HTTPS en despliegue
+| Layer | Statements | Branches | Functions | Lines |
+|-------|------------|----------|-----------|-------|
+| Backend | **80.43%** |  75.47% |  93.18% | **81.47%** |
+| Frontend | *(paste `npm run test:cov` result)* | | | |
 
-### Deploy
+> Target: **>80%** on both layers.
 
-Frontend: (URL)
-Backend: (URL)
+## Security
 
-### Autor
-Candidato — Full Stack Development Test
+- Helmet (HTTP security headers)
+- Global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`)
+- Rate limiting (`@nestjs/throttler`)
+- Secrets only in environment variables
+- Private payment key never exposed to the frontend
+- HTTPS on production (Vercel + Render)
 
-## Deploy
+## Payment sandbox
 
-- Frontend: https://product-checkout-app-git-develop-vendly5.vercel.app/
-- Backend: https://product-checkout-app.onrender.com/
-- Database: PostgreSQL managed Supabase
+Integration uses the UAT sandbox payment gateway provided for this challenge. Card data is fake but follows real card structure (Luhn). Test card: `4242 4242 4242 4242`.
