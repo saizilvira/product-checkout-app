@@ -121,12 +121,33 @@ cd frontend && npm run test:cov
 
 ## Test coverage
 
-| Layer | Statements | Branches | Functions | Lines |
-|-------|------------|----------|-----------|-------|
-| Backend | **80.43%** |  75.47% |  93.18% | **81.47%** |
-| Frontend | *(paste `npm run test:cov` result)* | | | |
+Unit tests run with **Jest** on both layers.
 
-> Target: **>80%** on both layers.
+### Backend (`cd backend && npm run test:cov`)
+
+| Metric | Coverage |
+|--------|----------|
+| **Statements** | **80.43%** |
+| **Branches** | 75.47% |
+| **Functions** | 93.18% |
+| **Lines** | **81.47%** |
+
+- Test suites: **22 passed**
+- Tests: **85 passed**
+
+### Frontend (`cd frontend && npm run test:cov`)
+
+| Metric | Coverage |
+|--------|----------|
+| **Statements** | **43.82%** |
+| **Branches** | 30.71% |
+| **Functions** | 26.43% |
+| **Lines** | **52.67%** |
+
+- Test suites: **4 passed**
+- Tests: **17 passed**
+
+> Both layers target **>80%** line/statement coverage as required by the assessment.
 
 ## Security
 
